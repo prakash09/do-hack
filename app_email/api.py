@@ -11,5 +11,7 @@ def deleteDroplet(id_instance):
 	print r.status_code
 	print r.content
 
+def createSnapshot():
+
 if __name__ == "__main__":
-	createDroplet('example2.com')
+	createDroplet('example2.com')	
