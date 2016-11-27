@@ -1,10 +1,10 @@
 import requests	
 import json
-from app_email.settings import *
-from app_email.views import *
+from settings import *
+from views import *
 
 def get_id():
-	r = requests.get("https://api.digitalocean.com/v2/droplets/", headers={""Authorization" : "Bearer "+access_token"})
+	r = requests.get("https://api.digitalocean.com/v2/droplets/", headers={"Authorization" : "Bearer "+access_token})
 	id1=json.loads(r1.content)['droplets'][0]['id']
 	print "-------------------"
 	print "Creating Snapshot"
@@ -17,11 +17,11 @@ def createSnapshot(droplet_id):
 	r1 = requests.get('https://api.digitalocean.com/v2/snapshots', headers={'Authorization': 'Bearer 4bc84c347e725c6ec6f0d42da3b3516db2e6fd9018a893988995e3a0d9aafdeb'})
 	count = len(json.loads(r1.content)['snapshots'])
 	r = requests.post("https://api.digitalocean.com/v2/droplets/"+str(droplet_id)+"/actions", headers={"Authorization" : "Bearer "+access_token}, data={"type":"snapshot", "name":"New Snapshot"})
-	while :
+	while True:
 		r2 = requests.get('https://api.digitalocean.com/v2/snapshots', headers={'Authorization': 'Bearer 4bc84c347e725c6ec6f0d42da3b3516db2e6fd9018a893988995e3a0d9aafdeb'})
 		print "------Creating------"
 		if len(json.loads(r2.content)['snapshots']) > count:
-			break
+			break	
 	# print json.loads(r.content)['action']['id']
 	# json.loads(r.content)['action']['id']
 
@@ -80,5 +80,5 @@ def convertSnapshotToDroplet():
 
 # def createSnapshot():
 
-if __name__ == "__main__":
-	createDroplet('example2.com')	
+# if __name__ == "__main__":
+# 	createDroplet('example2.com')	
