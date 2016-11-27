@@ -56,9 +56,8 @@ def set_interval(func,list_of_droplets ,sec):
 def maintainDroplets():
 	set_interval(optimiseDroplets,list_of_droplets,30)
 
-def createLoadBalancer():
-	#create a snapshot and 2 droplets.
-	pass
+def addServerToLoadBalancer(server_ip):
+	requests.get('http://localhost:80/upstream_conf?add=&upstream=backend&server='+server_ip)
 
 def start_loading():
 	maintainDroplets()
