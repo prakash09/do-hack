@@ -1,0 +1,17 @@
+Let’s now add more servers to the upstream group. We can do this easily with an add request:
+
+# curl 'http://localhost:8080/upstream_conf?add=&upstream=backend&server=10.2.2.93:8000'
+server 10.2.2.93:8000; # id=3
+
+
+
+
+
+
+
+An HTTP GET for the upstream group returns a list of the servers in it with the ID numbers used to identify them in change operations:
+
+$ curl http://localhost/upstream_conf?upstream=backend
+server 192.168.56.101:80; # id=0
+server 192.168.56.102:80; # id=1
+server 192.168.56.103:80; # id=2
