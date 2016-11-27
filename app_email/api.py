@@ -7,8 +7,8 @@ def createSnapshot(droplet_id):
 	print json.loads(r.content)['action']['id']
 	return json.loads(r.content)['action']['id']
 
-def createDropletFromSnapshot(snapshot_id, region="nyc3", size="512mb"):
-	r = requests.post("https://api.digitalocean.com/v2/droplets/", headers={"Authorization" : "Bearer "+access_token, "Content-Type" : "application/json"}, data=json.dumps({"name":"ninstance", "region":region, "size", "image": snapshot_id, "ssh_keys":[]})
+def createDropletFromSnapshot(snapshot_id=21161926, ssh_key="4870496",region="nyc3", size="512mb"):
+	r = requests.post("https://api.digitalocean.com/v2/droplets/", headers={"Authorization" : "Bearer "+access_token, "Content-Type" : "application/json"}, data=json.dumps({"name":"n2instance", "region":region, "size":size, "image": snapshot_id, "ssh_keys":[ssh_key]})
 
 
 def createDroplet(server_name,size='512mb',image='ubuntu-14-04-x64'):
