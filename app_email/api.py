@@ -1,8 +1,19 @@
 import requests	
 import json
 from app_email.settings import *
+
+def createSnapshot(droplet_id):
+	r = requests.post("https://api.digitalocean.com/v2/droplets/"+str(droplet_id)+"/actions", headers={"Authorization" : "Bearer "+access_token}, data={"type":"snapshot", "name":"New Snapshot"})
+	print json.loads(r.content)['action']['id']
+	return json.loads(r.content)['action']['id']
+
+def createDropletFromSnapshot(snapshot_id, region="nyc3", size="512mb"):
+	r = requests.post("https://api.digitalocean.com/v2/droplets/", headers={"Authorization" : "Bearer "+access_token, "Content-Type" : "application/json"}, data=json.dumps({"name":"ninstance", "region":region, "size", "image": snapshot_id, "ssh_keys":[]})
+
+
 def createDroplet(server_name,size='512mb',image='ubuntu-14-04-x64'):
-	r = requests.post("https://api.digitalocean.com/v2/droplets", headers={"Authorization": "Bearer "+access_token},data=({"name":"example2.com","region":"nyc3","size":"512mb","image":"ubuntu-14-04-x64","backups":False}))	print r.status_code
+	r = requests.post("https://api.digitalocean.com/v2/droplets", headers={"Authorization": "Bearer "+access_token},data={"name":"example2.com","region":"nyc3","size":"512mb","image":"ubuntu-14-04-x64","backups":False})	
+	print r.status_code
 	#check if the server is ready -- to-do
 
 	#ip_address = r["ip"]
@@ -29,6 +40,8 @@ def convertSnapshotToDroplet():
 	r = requests.post('https://api.digitalocean.com/v2/droplets', headers={'Authorization': 'Bearer e76c1e2088c706ac7e48971fd77d4636acc806c0da47895e42705ccd107f1dc'}, data={"name":"example2.com","region":"nyc1","size":"512mb","image":"21150832"})
 	print r
 	return r
+
+
 
 # def createSnapshot():
 
