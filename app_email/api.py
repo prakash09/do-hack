@@ -1,17 +1,50 @@
 import requests	
 import json
 from app_email.settings import *
+from app_email.views import *
+
+def get_id():
+	r = requests.get("https://api.digitalocean.com/v2/droplets/", headers={""Authorization" : "Bearer "+access_token"})
+	id1=json.loads(r1.content)['droplets'][0]['id']
+	print "-------------------"
+	print "Creating Snapshot"
+	print "-------------------"
+	createSnapshot(id1)
+
 
 def createSnapshot(droplet_id):
+
+	r1 = requests.get('https://api.digitalocean.com/v2/snapshots', headers={'Authorization': 'Bearer 4bc84c347e725c6ec6f0d42da3b3516db2e6fd9018a893988995e3a0d9aafdeb'})
+	count = len(json.loads(r1.content)['snapshots'])
 	r = requests.post("https://api.digitalocean.com/v2/droplets/"+str(droplet_id)+"/actions", headers={"Authorization" : "Bearer "+access_token}, data={"type":"snapshot", "name":"New Snapshot"})
-	print json.loads(r.content)['action']['id']
-	return json.loads(r.content)['action']['id']
+	while :
+		r2 = requests.get('https://api.digitalocean.com/v2/snapshots', headers={'Authorization': 'Bearer 4bc84c347e725c6ec6f0d42da3b3516db2e6fd9018a893988995e3a0d9aafdeb'})
+		print "------Creating------"
+		if len(json.loads(r2.content)['snapshots']) > count:
+			break
+	# print json.loads(r.content)['action']['id']
+	# json.loads(r.content)['action']['id']
 
-def createDropletFromSnapshot(snapshot_id=21161926, ssh_key="4870496",region="nyc3", size="512mb"):
+def createDropletFromSnapshot(name="example",snapshot_id=21161926, ssh_key="4870496",region="nyc3", size="512mb"):
+	print "$$$$$$$$$$$"
+	print "Creating Droplet from Snapshot"
+	print "$$$$$$$$$$$"
 	r1=requests.get("https://api.digitalocean.com/v2/images/?private=true", headers={"Authorization" : "Bearer "+access_token})
-	json.loads(r1.content)['images'][-1]['id']
-	r = requests.post("https://api.digitalocean.com/v2/droplets/", headers={"Authorization" : "Bearer "+access_token, "Content-Type" : "application/json"}, data=json.dumps({"name":"n2instance", "region":region, "size":size, "image": snapshot_id, "ssh_keys":[ssh_key]})
+	snapshot_id	=json.loads(r1.content)['images'][-1]['id']
+	r = requests.post("https://api.digitalocean.com/v2/droplets/", headers={"Authorization" : "Bearer "+access_token, "Content-Type" : "application/json"}, data=json.dumps({"name":name, "region":region, "size":size, "image": snapshot_id, "ssh_keys":[ssh_key]}))
+	r2 = requests.get("https://api.digitalocean.com/v2/droplets", headers={"Authorization" : "Bearer "+access_token})
+	ip_address=json.loads(r1.content)['droplets'][-1]['networks']['v4'][0]['ip_address']
+	addServerToLoadBalancer(ip_address)
 
+
+	with open('performance.sh', 'w+') as f:
+		write("#!/bin/bash")
+		write("vmstat -s")
+	bashCommand = "scp preformance.sh root@"+ip_address+":/root/performance.sh"
+	subprocess.check_output(['bash','-c', bashCommand])
+	newCommand = "ssh root@"+ip+" 'chmod +x performance.sh'"
+	subprocess.check_output(['bash','-c', newCommand])
+	
 
 def createDroplet(server_name,size='512mb',image='ubuntu-14-04-x64'):
 	r = requests.post("https://api.digitalocean.com/v2/droplets", headers={"Authorization": "Bearer "+access_token},data={"name":"example2.com","region":"nyc3","size":"512mb","image":"ubuntu-14-04-x64","backups":False})	

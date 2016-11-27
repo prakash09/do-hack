@@ -5,6 +5,7 @@ import threading
 # Create your views here.
 load_balancer_exists=False
 counter=0
+instance_size = "512mb"
 def measurePerformance(ip_address):
 	bashCommand="ssh root@"+ip_address+" './performance.sh'"
 	output = subprocess.check_output(['bash','-c', bashCommand])
@@ -33,7 +34,8 @@ def optimiseDroplets(list_of_droplets):
 		if not load_balancer_exists:
 			createLoadBalancer()
 		else:
-			r = createDroplet("example"+counter+".com")
+			get_id()
+			createDropletFromSnapshot(name="example"+counter+".com",size=instance_size)
 			counter+=1
 		print r
 		return r
@@ -60,4 +62,6 @@ def addServerToLoadBalancer(server_ip):
 	requests.get('http://localhost:80/upstream_conf?add=&upstream=backend&server='+server_ip)
 
 def start_loading():
+	print "Size of the instance: "
+	instance_size = int(raw_input())
 	maintainDroplets()
