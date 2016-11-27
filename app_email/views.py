@@ -26,6 +26,7 @@ def optimiseDroplets(list_of_droplets):
 	min_stat = -1
 	min_val = 10000
 	for droplet in list_of_droplets:
+
 		stats = measurePerformance(droplet)
 		print "Stats are :" +stats["memory"]
 		sum_memory+=stats["memory"]
@@ -53,20 +54,20 @@ def optimiseDroplets(list_of_droplets):
 		return r
 
 
-def set_interval(func,list_of_droplets ,sec):
-    def func_wrapper():
-        set_interval(func,list_of_droplets ,sec)
-        print "hitting the ip addresses"
-        print func(list_of_droplets)
-    t = threading.Timer(sec, func_wrapper)
-    t.start()
-    return t
+# def set_interval(func,list_of_droplets ,sec):
+#     def func_wrapper():
+#         set_interval(func,list_of_droplets ,sec)
+#         print "hitting the ip addresses"
+#         print func(list_of_droplets)
+#     t = threading.Timer(sec, func_wrapper)
+#     t.start()
+#     return t
 
 def maintainDroplets():
 	# list_of_droplets = requests.get('http://localhost:80/upstream_conf?upstream=backend')
 	# print list_of_droplets
 	list_of_droplets = ["104.131.5.143", "159.203.130.164", "138.197.27.13","138.197.26.225","104.236.215.110"]
-	set_interval(optimiseDroplets,list_of_droplets,1)
+	optimiseDroplets(list_of_droplets)
 
 def addServerToLoadBalancer(server_ip):
 	requests.get('http://localhost:80/upstream_conf?add=&upstream=backend&server='+server_ip)
@@ -74,6 +75,8 @@ def addServerToLoadBalancer(server_ip):
 def start_loading():
 	print "Size of the instance: "
 	instance_size = str(raw_input())
+
+	print "Do you want it to be automatic or you want it to be notified?"
 	maintainDroplets()
 
 if __name__ == "__main__":

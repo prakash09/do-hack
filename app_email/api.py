@@ -4,24 +4,26 @@ from settings import *
 from views import *
 
 def get_id():
-	r = requests.get("https://api.digitalocean.com/v2/droplets/", headers={"Authorization" : "Bearer "+access_token})
+	r1 = requests.get("https://api.digitalocean.com/v2/droplets/", headers={"Authorization" : "Bearer "+access_token})
 	id1=json.loads(r1.content)['droplets'][0]['id']
 	print "-------------------"
-	print "Creating Snapshot"
+	print "Getting the id of droplet"
 	print "-------------------"
 	createSnapshot(id1)
 
 
 def createSnapshot(droplet_id):
-
+	print "#################"
+	print "Creating Snapshot"
+	print "#################"
 	r1 = requests.get('https://api.digitalocean.com/v2/snapshots', headers={'Authorization': 'Bearer 4bc84c347e725c6ec6f0d42da3b3516db2e6fd9018a893988995e3a0d9aafdeb'})
 	count = len(json.loads(r1.content)['snapshots'])
 	r = requests.post("https://api.digitalocean.com/v2/droplets/"+str(droplet_id)+"/actions", headers={"Authorization" : "Bearer "+access_token}, data={"type":"snapshot", "name":"New Snapshot"})
 	while True:
 		r2 = requests.get('https://api.digitalocean.com/v2/snapshots', headers={'Authorization': 'Bearer 4bc84c347e725c6ec6f0d42da3b3516db2e6fd9018a893988995e3a0d9aafdeb'})
-		print "------Creating------"
 		if len(json.loads(r2.content)['snapshots']) > count:
 			break	
+	print "Droplet successfully created"
 	# print json.loads(r.content)['action']['id']
 	# json.loads(r.content)['action']['id']
 
@@ -33,7 +35,8 @@ def createDropletFromSnapshot(name="example",snapshot_id=21161926, ssh_key="4870
 	snapshot_id	=json.loads(r1.content)['images'][-1]['id']
 	r = requests.post("https://api.digitalocean.com/v2/droplets/", headers={"Authorization" : "Bearer "+access_token, "Content-Type" : "application/json"}, data=json.dumps({"name":name, "region":region, "size":size, "image": snapshot_id, "ssh_keys":[ssh_key]}))
 	r2 = requests.get("https://api.digitalocean.com/v2/droplets", headers={"Authorization" : "Bearer "+access_token})
-	ip_address=json.loads(r1.content)['droplets'][-1]['networks']['v4'][0]['ip_address']
+	print "Droplet successfully created with ID : "+snapshot_id
+	ip_address=json.loads(r2.content)['droplets'][-1]['networks']['v4'][0]['ip_address']
 	addServerToLoadBalancer(ip_address)
 
 
@@ -62,6 +65,7 @@ def createDroplet(server_name,size='512mb',image='ubuntu-14-04-x64'):
 	subprocess.check_output(['bash','-c', newCommand])
 	return r
 def deleteDroplet(id_instance):
+	print "Deleting the droplet"
 	requests.delete("https://api.digitalocean.com/v2/droplets/"+str(id_instance), headers={"Authorization": "Bearer "+access_token})
 	print r.status_code
 	print r.content
