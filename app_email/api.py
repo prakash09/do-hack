@@ -34,15 +34,15 @@ def createDropletFromSnapshot(name="example",snapshot_id=21161926, ssh_key="4870
 	r1=requests.get("https://api.digitalocean.com/v2/images/?private=true", headers={"Authorization" : "Bearer "+access_token})
 	snapshot_id	=json.loads(r1.content)['images'][-1]['id']
 	r = requests.post("https://api.digitalocean.com/v2/droplets/", headers={"Authorization" : "Bearer "+access_token, "Content-Type" : "application/json"}, data=json.dumps({"name":name, "region":region, "size":size, "image": snapshot_id, "ssh_keys":[ssh_key]}))
-	r2 = requests.get("https://api.digitalocean.com/v2/droplets", headers={"Authorization" : "Bearer "+access_token})
-	print "Droplet successfully created with ID : "+snapshot_id
+	r2 = requests.get("https://api.digitalocean.com/v2/droplets/", headers={"Authorization" : "Bearer "+access_token})
+	print "Droplet successfully created with ID : "+str(snapshot_id)
 	ip_address=json.loads(r2.content)['droplets'][-1]['networks']['v4'][0]['ip_address']
-	addServerToLoadBalancer(ip_address)
+	# addServerToLoadBalancer(ip_address)
 
 
 	with open('performance.sh', 'w+') as f:
-		write("#!/bin/bash")
-		write("vmstat -s")
+		f.write("#!/bin/bash")
+		f.write("vmstat -s")
 	bashCommand = "scp preformance.sh root@"+ip_address+":/root/performance.sh"
 	subprocess.check_output(['bash','-c', bashCommand])
 	newCommand = "ssh root@"+ip+" 'chmod +x performance.sh'"
